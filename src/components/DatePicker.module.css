@@ -1,0 +1,104 @@
+.datePicker {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px; /* Set a fixed width for the calendar */
+    z-index: 1000; /* Ensure it pops above other elements */
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    right: 20px; /* Adjust this value to move the calendar to the right */
+}
+
+.calendarHeader {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.monthYearContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.yearButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px; /* Add some space before the dropdown arrow */
+}
+
+.arrowButtons {
+    display: flex;
+    flex-direction: column; /* Stack arrows vertically */
+}
+
+.arrowButtons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.yearDropdown {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    z-index: 1000; /* Ensure it pops above other elements */
+    margin-top: 5px; /* Space below the year button */
+    padding: 5px;
+    border-radius: 4px;
+    max-height: 120px; /* Set a maximum height */
+    overflow-y: auto; /* Enable scrolling */
+    width: 60px; /* Compact width */
+}
+
+.weekDays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* Create a 7-column grid for the days */
+    margin-bottom: 5px;
+}
+
+.dayHeader {
+    text-align: center;
+    font-weight: bold; /* Make day names bold */
+}
+
+.dateGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* Create a 7-column grid for the days */
+}
+
+.dateGrid button {
+    border: none;
+    background: none;
+    padding: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dateGrid button:hover {
+    background: #f0f0f0; /* Add hover effect */
+}
+
+.dateActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.clearButton,
+.todayButton {
+    border: none;
+    background: #007bff; /* Bootstrap primary color */
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 0.85em; /* Slightly smaller font size */
+}
+
+.clearButton:hover,
+.todayButton:hover {
+    background: #0056b3; /* Darker blue on hover */
+}

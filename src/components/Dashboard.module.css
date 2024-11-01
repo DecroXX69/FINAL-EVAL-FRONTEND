@@ -1,0 +1,187 @@
+.dashboardContainer {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 150px; /* Shrinked sidebar */
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center buttons */
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 30px; /* Adjust image size */
+    height: 30px;
+    margin-right: 8px;
+}
+
+.logoutButton{
+    position: relative;
+    top: 30em;
+    color: red;
+}
+
+.sidebarButton, .logoutButton {
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%; /* Make buttons full width */
+    display: flex;
+    align-items: center; /* Align icon and text */
+}
+
+.sidebarButton:hover {
+    background-color: #e0e0e0;
+}
+
+.active {
+    font-weight: bold;
+    color: blue;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.date {
+    color: grey;
+}
+
+.boardHeader {
+    display: flex; /* Align Board title and Add People button in a row */
+    /* Space between title and button */
+    align-items: center; /* Align vertically */
+}
+
+.cardContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    height: 70vh; /* Ensures cards almost touch bottom */
+}
+
+.card {
+    gap: 17px;
+    background-color: #d3d3d3;
+    flex: 1;
+    margin: 0 10px;
+    padding: 10px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+}
+
+.cardTitle {
+    align-self: flex-start;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+.pplIcon{
+    margin-left: 14px;
+}
+.topRightButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.topRightButton img {
+    width: 15px; /* Adjust icon size */
+    height: 15px;
+}
+
+.topRightButtons {
+    display: flex;
+    gap: 5px; /* Space between the two icons in To Do card */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.addButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: blue; /* Style the text color */
+    margin-left: 10px;
+}
+
+.sidebarIcon {
+    margin-right: 5px; /* Space between icon and text */
+}
+
+/* Container for To Do card buttons */
+.toDoButtonsContainer {
+    display: flex;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    gap: 8px; /* Adds space between the two buttons */
+}
+
+/* Specific styles for Add Task button */
+.addTaskButton,
+.collapseButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px; /* Adds slight padding to give space around icons */
+}
+
+.addTaskButton img,
+.collapseButton img {
+    width: 15px; /* Adjust icon size */
+    height: 15px;
+}
+
+.taskList {
+    overflow-y: auto; /* Allow scrolling in the task list */
+    max-height: calc(100% - 40px); /* Leave space for header and buttons */
+}
+
+.taskCard {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    margin: 10px 0; /* Space between task cards */
+    padding: 10px;
+    display: flex;
+    flex-direction: column; /* Allow title, body, footer to stack */
+    flex: 1; /* Allow task cards to expand and fill available space */
+}
+
+.taskHeader, .taskBody, .taskFooter {
+    margin: 5px 0; /* Space between sections */
+}
+
+.checklistItems {
+    margin-top: 10px; /* Space above checklist */
+}
+
+.addPeopleButton{
+    border: none;
+    
+}

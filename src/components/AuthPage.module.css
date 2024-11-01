@@ -1,0 +1,103 @@
+/* Main container that holds both left and right parts */
+/* Prevent scrolling */
+html, body {
+  overflow: hidden;
+  margin: 0; /* Remove any outer border */
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+.authContainer {
+  display: flex;
+  height: 100vh;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+/* Left side - image section */
+.authLeft {
+  flex: 1;
+  background-color: #17A2B8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  color: white;
+}
+
+.authImage {
+  max-width: 60%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* Text styling below the image */
+.welcomeText {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.subText {
+  font-size: 16px;
+  font-weight: 300;
+}
+
+/* Right side - form section */
+.authRight {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.authForm {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.authTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.authInput {
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.authButton {
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.authButton:hover {
+  background-color: #0056b3;
+}
+
+.toggleText {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.toggleLink {
+  color: #007bff;
+  cursor: pointer;
+  font-weight: bold;
+}
