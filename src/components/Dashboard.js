@@ -1,5 +1,4 @@
-// src/Dashboard.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Dashboard.module.css';
 import image1 from '../images/addTask.png';
 import image2 from '../images/collapse.png';
@@ -18,18 +17,36 @@ const Dashboard = ({ username, users, setUsers }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAddPeopleModalOpen, setAddPeopleModalOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/tasks', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // token included
+          },
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch tasks');
+        
+        const data = await response.json();
+        setTasks(data.tasks); // assume the API returns { tasks: [...] }
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const handleModalSubmit = (taskData) => {
+    
     setTasks((prevTasks) => [...prevTasks, taskData]);
     setModalOpen(false);
   };
 
   const handleAddUser = async (email) => {
-    if (!email) {
-      console.error('Email cannot be empty');
-      return;
-    }
-  
     try {
       const response = await fetch('http://localhost:5000/api/auth/add-people', {
         method: 'POST',
@@ -38,20 +55,18 @@ const Dashboard = ({ username, users, setUsers }) => {
         },
         body: JSON.stringify({ email }),
       });
-  
+
       if (!response.ok) {
-        const errorData = await response.json(); // Get the response body to see the error message
-        throw new Error(`Failed to add user: ${errorData.message || 'Unknown error'}`);
+        throw new Error('Failed to add user');
       }
-  
+
       const data = await response.json();
       console.log('User added:', data);
-      setUsers((prevUsers) => [...prevUsers, email]);
+      setUsers((prevUsers) => [...prevUsers, data.user.email]);
     } catch (error) {
-      console.error('Error adding user:', error.message);
+      console.log('Error adding user:', error);
     }
   };
-  
 
   return (
     <div className={styles.dashboardContainer}>

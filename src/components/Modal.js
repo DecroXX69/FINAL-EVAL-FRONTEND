@@ -31,29 +31,60 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => { // Accept task as a pro
     }, [isOpen, task]); // Add task as a dependency
 
     if (!isOpen) return null;
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
+      
         const formData = new FormData(e.target);
         const title = formData.get('title');
         const assignedTo = formData.get('assignedTo');
-    
+      
         if (!title || !priority || checklists.length === 0 || !checklists.some(item => item)) {
-            alert('Please fill in the Title, select a Priority, and add at least one Checklist item.'); // Alert user for missing fields
-            return; // Prevent form submission
+          alert('Please fill in the Title, select a Priority, and add at least one Checklist item.');
+          return;
         }
-    
+      
+        // Format checklists to include both item and completed status, matching schema
+        const formattedChecklist = checklists.map(item => ({
+          item,
+          completed: completedChecklists.includes(item)
+        }));
+      
         const taskData = {
-            title: title,
-            priority: priority,
-            assignedTo: assignedTo,
-            checklist: checklists.filter(item => item),
-            completedChecklistCount: completedChecklists.filter(completed => completed).length,
-            dueDate: selectedDate ? selectedDate.toISOString() : null,
+          title,
+          priority,
+          assignedTo,
+          checklist: formattedChecklist,
+          
+          dueDate: selectedDate ? selectedDate.toISOString() : null,
+          status: task ? task.status : 'To Do', // Use current status or default to 'To Do'
         };
-        onSubmit(taskData);
-    };
+      
+        try {
+          const response = await fetch(
+            task ? `http://localhost:5000/api/tasks/${task._id}` : 'http://localhost:5000/api/tasks',
+            {
+              method: task ? 'PUT' : 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+              body: JSON.stringify(taskData),
+            }
+          );
+      
+          if (!response.ok) throw new Error('Failed to save task');
+          const savedTask = await response.json();
+      
+          onSubmit(savedTask); // Refresh task list after saving
+          onClose();
+        } catch (error) {
+          console.error('Error saving task:', error.message);
+        }
+      };
+      
+    
+    
+    
 
     const selectPriority = (level) => {
         setPriority(level);
@@ -188,4 +219,4 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => { // Accept task as a pro
     );
 };
 
-export default Modal;   
+export default Modal;
