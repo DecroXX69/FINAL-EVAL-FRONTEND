@@ -61,7 +61,7 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
       
         try {
           const response = await fetch(
-            task ? `http://localhost:5000/api/tasks/${task._id}` : 'http://localhost:5000/api/tasks',
+            task ? `http://localhost:5000/api/task/${task._id}` : 'http://localhost:5000/api/task',
             {
               method: task ? 'PUT' : 'POST',
               headers: {
