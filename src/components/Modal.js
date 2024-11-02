@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Modal.module.css';
-import DatePicker from './DatePicker'; // Ensure to import the DatePicker component
+import DatePicker from './DatePicker'; 
 import deleteimage from '../images/Delete.png';
 import redimg from '../images/red.png';
 import blueimg from '../images/blue.png';
 import greenimg from '../images/green.png';
 
-const Modal = ({ isOpen, onClose, task, onSubmit }) => { // Accept task as a prop
+const Modal = ({ isOpen, onClose, task, onSubmit }) => { 
     const [checklists, setChecklists] = useState([]);
     const [completedChecklists, setCompletedChecklists] = useState([]);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
-    const [priority, setPriority] = useState(null); // New state for priority
+    const [priority, setPriority] = useState(null); 
 
     useEffect(() => {
         if (isOpen) {
-            if (task) { // Populate fields if editing an existing task
+            if (task) {
                 setChecklists(task.checklist || []);
-                setCompletedChecklists(new Array(task.checklist.length).fill(false)); // Adjust completed checklist based on existing task
+                setCompletedChecklists(new Array(task.checklist.length).fill(false)); 
                 setSelectedDate(task.dueDate ? new Date(task.dueDate) : null);
                 setPriority(task.priority || null);
             } else {
-                // Reset state for creating a new task
+                
                 setChecklists([]);
                 setCompletedChecklists([]);
                 setSelectedDate(null);
                 setPriority(null);
             }
         }
-    }, [isOpen, task]); // Add task as a dependency
+    }, [isOpen, task]); 
 
     if (!isOpen) return null;
     const handleSubmit = async (e) => {
@@ -43,7 +43,7 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => { // Accept task as a pro
           return;
         }
       
-        // Format checklists to include both item and completed status, matching schema
+        
         const formattedChecklist = checklists.map(item => ({
           item,
           completed: completedChecklists.includes(item)
@@ -56,7 +56,7 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => { // Accept task as a pro
           checklist: formattedChecklist,
           
           dueDate: selectedDate ? selectedDate.toISOString() : null,
-          status: task ? task.status : 'To Do', // Use current status or default to 'To Do'
+          status: task ? task.status : 'To Do', 
         };
       
         try {
@@ -123,7 +123,7 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => { // Accept task as a pro
     const handleDateSelect = (date) => {
         if (date instanceof Date && !isNaN(date)) {
             setSelectedDate(date);
-            // Close calendar when a date is selected
+            
             setIsCalendarOpen(false);
         } else {
             console.error('Invalid date selected:', date);

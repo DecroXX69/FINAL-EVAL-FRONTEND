@@ -3,11 +3,11 @@
     background: white;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 200px; /* Set a fixed width for the calendar */
-    z-index: 1000; /* Ensure it pops above other elements */
+    width: 200px; 
+    z-index: 1000; 
     padding: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    right: 20px; /* Adjust this value to move the calendar to the right */
+    right: 20px; 
 }
 
 .calendarHeader {
@@ -26,12 +26,12 @@
     background: none;
     border: none;
     cursor: pointer;
-    margin-left: 5px; /* Add some space before the dropdown arrow */
+    margin-left: 5px; 
 }
 
 .arrowButtons {
     display: flex;
-    flex-direction: column; /* Stack arrows vertically */
+    flex-direction: column; 
 }
 
 .arrowButtons button {
@@ -44,29 +44,29 @@
     position: absolute;
     background: white;
     border: 1px solid #ccc;
-    z-index: 1000; /* Ensure it pops above other elements */
-    margin-top: 5px; /* Space below the year button */
+    z-index: 1000; 
+    margin-top: 5px; 
     padding: 5px;
     border-radius: 4px;
-    max-height: 120px; /* Set a maximum height */
-    overflow-y: auto; /* Enable scrolling */
-    width: 60px; /* Compact width */
+    max-height: 120px; 
+    overflow-y: auto; 
+    width: 60px; 
 }
 
 .weekDays {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* Create a 7-column grid for the days */
+    grid-template-columns: repeat(7, 1fr); 
     margin-bottom: 5px;
 }
 
 .dayHeader {
     text-align: center;
-    font-weight: bold; /* Make day names bold */
+    font-weight: bold; 
 }
 
 .dateGrid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* Create a 7-column grid for the days */
+    grid-template-columns: repeat(7, 1fr); 
 }
 
 .dateGrid button {
@@ -78,7 +78,7 @@
 }
 
 .dateGrid button:hover {
-    background: #f0f0f0; /* Add hover effect */
+    background: #f0f0f0;
 }
 
 .dateActions {
@@ -90,15 +90,15 @@
 .clearButton,
 .todayButton {
     border: none;
-    background: #007bff; /* Bootstrap primary color */
+    background: #007bff; 
     color: white;
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 3px;
-    font-size: 0.85em; /* Slightly smaller font size */
+    font-size: 0.85em; 
 }
 
 .clearButton:hover,
 .todayButton:hover {
-    background: #0056b3; /* Darker blue on hover */
+    background: #0056b3; 
 }

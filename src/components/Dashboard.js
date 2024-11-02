@@ -24,7 +24,7 @@ const Dashboard = ({ username, users, setUsers }) => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // token included
+            Authorization: `Bearer ${localStorage.getItem('token')}`, 
           },
         });
         

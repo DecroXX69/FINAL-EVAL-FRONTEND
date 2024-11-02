@@ -6,7 +6,7 @@ const DatePicker = ({ onSelect, clearDate }) => {
     const [yearDropdownOpen, setYearDropdownOpen] = React.useState(false);
     
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; // Days of the week
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; 
 
     const selectToday = () => {
         const today = new Date();
@@ -22,7 +22,7 @@ const DatePicker = ({ onSelect, clearDate }) => {
     const adjustYear = (newYear) => {
         const newDate = new Date(newYear, date.getMonth(), 1);
         setDate(newDate);
-        setYearDropdownOpen(false); // Close dropdown after selection
+        setYearDropdownOpen(false); 
     };
 
     const toggleYearDropdown = () => {
@@ -46,7 +46,7 @@ const DatePicker = ({ onSelect, clearDate }) => {
                 </div>
                 {yearDropdownOpen && (
                     <div className={styles.yearDropdown}>
-                        {Array.from({ length: 100 }, (_, i) => date.getFullYear() - 50 + i).map(year => ( // Extend years
+                        {Array.from({ length: 100 }, (_, i) => date.getFullYear() - 50 + i).map(year => ( 
                             <button key={year} onClick={() => adjustYear(year)}>
                                 {year}
                             </button>
@@ -66,7 +66,7 @@ const DatePicker = ({ onSelect, clearDate }) => {
                     <button 
                         key={i} 
                         onClick={() => onSelect(new Date(date.getFullYear(), date.getMonth(), i + 1))}
-                        disabled={i + 1 > new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()} // Disable buttons for invalid days
+                        disabled={i + 1 > new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()} 
                     >
                         {i + 1}
                     </button>

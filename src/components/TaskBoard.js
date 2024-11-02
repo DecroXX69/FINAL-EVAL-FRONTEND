@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Task.module.css';
 import dotimg from '../images/dots.png';
-import Modal from './Modal'; // Assuming your modal component is named TaskModal
+import Modal from './Modal'; 
 
 const TaskBoard = ({ tasks, onUpdateTask }) => {
     const [activePopupIndex, setActivePopupIndex] = useState(null);
@@ -18,18 +18,18 @@ const TaskBoard = ({ tasks, onUpdateTask }) => {
     };
 
     const handleEditClick = (task) => {
-        setCurrentTask(task); // Set the current task to be edited
-        setModalOpen(true); // Open the modal
+        setCurrentTask(task); 
+        setModalOpen(true); 
     };
 
     const handleModalClose = () => {
-        setModalOpen(false); // Close the modal
-        setCurrentTask(null); // Reset current task
+        setModalOpen(false); 
+        setCurrentTask(null); 
     };
 
     const handleTaskUpdate = (updatedTask) => {
-        onUpdateTask(updatedTask); // Call the function to update the task
-        handleModalClose(); // Close the modal after updating
+        onUpdateTask(updatedTask);
+        handleModalClose(); 
     };
 
     return (
@@ -99,9 +99,9 @@ const TaskBoard = ({ tasks, onUpdateTask }) => {
             ))}
             {modalOpen && (
                 <Modal 
-                    task={currentTask} // Pass the current task to the modal
-                    onClose={handleModalClose} // Function to close the modal
-                    onUpdate={handleTaskUpdate} // Function to handle task update
+                    task={currentTask} 
+                    onClose={handleModalClose} 
+                    onUpdate={handleTaskUpdate} 
                 />
             )}
         </div>

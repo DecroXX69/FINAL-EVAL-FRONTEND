@@ -4,12 +4,12 @@
 }
 
 .sidebar {
-    width: 150px; /* Shrinked sidebar */
+    width: 150px; 
     background-color: #f0f0f0;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center buttons */
+    align-items: center; 
 }
 
 .logoContainer {
@@ -19,7 +19,7 @@
 }
 
 .logo {
-    width: 30px; /* Adjust image size */
+    width: 30px; 
     height: 30px;
     margin-right: 8px;
 }
@@ -36,9 +36,9 @@
     padding: 10px;
     cursor: pointer;
     text-align: left;
-    width: 100%; /* Make buttons full width */
+    width: 100%; 
     display: flex;
-    align-items: center; /* Align icon and text */
+    align-items: center; 
 }
 
 .sidebarButton:hover {
@@ -67,16 +67,16 @@
 }
 
 .boardHeader {
-    display: flex; /* Align Board title and Add People button in a row */
-    /* Space between title and button */
-    align-items: center; /* Align vertically */
+    display: flex; 
+   
+    align-items: center; 
 }
 
 .cardContainer {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
-    height: 70vh; /* Ensures cards almost touch bottom */
+    height: 70vh; 
 }
 
 .card {
@@ -110,13 +110,13 @@
 }
 
 .topRightButton img {
-    width: 15px; /* Adjust icon size */
+    width: 15px; 
     height: 15px;
 }
 
 .topRightButtons {
     display: flex;
-    gap: 5px; /* Space between the two icons in To Do card */
+    gap: 5px; 
     position: absolute;
     top: 10px;
     right: 10px;

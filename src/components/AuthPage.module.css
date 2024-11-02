@@ -1,8 +1,8 @@
-/* Main container that holds both left and right parts */
-/* Prevent scrolling */
+
+
 html, body {
   overflow: hidden;
-  margin: 0; /* Remove any outer border */
+  margin: 0; 
   padding: 0;
   height: 100%;
   width: 100%;
@@ -11,10 +11,10 @@ html, body {
 .authContainer {
   display: flex;
   height: 100vh;
-  overflow: hidden; /* Prevent scrolling */
+  overflow: hidden; 
 }
 
-/* Left side - image section */
+
 .authLeft {
   flex: 1;
   background-color: #17A2B8;
@@ -33,7 +33,7 @@ html, body {
   margin-bottom: 20px;
 }
 
-/* Text styling below the image */
+
 .welcomeText {
   font-size: 24px;
   font-weight: bold;
@@ -45,7 +45,6 @@ html, body {
   font-weight: 300;
 }
 
-/* Right side - form section */
 .authRight {
   flex: 1;
   display: flex;

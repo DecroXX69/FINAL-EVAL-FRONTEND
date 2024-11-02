@@ -1,6 +1,6 @@
 .taskBoard {
-    overflow-y: auto; /* Add scroll functionality */
-    max-height: 400px; /* Limit height */
+    overflow-y: auto; 
+    max-height: 400px; 
     padding: 10px;
     
 }
@@ -22,15 +22,15 @@
 .taskPriority {
     display: flex;
     align-items: center;
-    border: 1px solid #ccc; /* Add border */
-    padding: 2px; /* Add some padding */
-    border: none; /* Rounded corners */
-    font-size: 12px; /* Smaller font size */
+    border: 1px solid #ccc; 
+    padding: 2px; 
+    border: none; 
+    font-size: 12px; 
 }
 
 .priorityImage {
    
-    margin-right: 5px; /* Space between image and text */
+    margin-right: 5px; 
 }
 
 .taskAssignee {
@@ -47,11 +47,11 @@
 .taskTitle {
     font-size: 18px;
     font-weight: bold;
-    overflow: hidden; /* Ensure overflow is hidden */
-    white-space: nowrap; /* Prevent wrapping */
-    text-overflow: ellipsis; /* Add ellipsis for overflow */
-    max-width: 100%; /* Ensure it doesn't exceed card width */
-    cursor: pointer; /* Show pointer cursor on hover */
+    overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+    max-width: 100%;
+    cursor: pointer;
 }
 
 .checklistProgress {
@@ -72,22 +72,22 @@
 
 .popupMenu {
     position: absolute;
-    top: 21.5%; /* Positions the popup just below the button */
-    right: 10%; /* Aligns it to the right of the button */
+    top: 21.5%; 
+    right: 10%; 
     background-color: white;
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 100; /* Ensures it appears above other elements */
+    z-index: 100;
     padding: 10px;
-    width: 120px; /* Set width to keep it compact */
-    margin-top: 5px; /* Space between the button and popup */
+    width: 120px;
+    margin-top: 5px; 
     border-radius: 4px;
 }
 
 .popupMenu button {
     display: block;
-    width: 100%; /* Full width for buttons */
-    margin: 5px 0; /* Margin for spacing */
+    width: 100%; 
+    margin: 5px 0; 
     border: none;
     text-align: left;
     background-color: white;

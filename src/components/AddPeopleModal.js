@@ -1,4 +1,4 @@
-// src/components/AddPeopleModal.jsx
+
 import React, { useState } from 'react';
 import styles from './AddPeopleModal.module.css';
 
@@ -8,8 +8,8 @@ const AddPeopleModal = ({ isOpen, onClose, onAdd }) => {
   const handleAddClick = () => {
     if (email) {
       onAdd(email);
-      setEmail(''); // Reset email input
-      onClose(); // Close the modal after adding
+      setEmail(''); 
+      onClose(); 
     }
   };
 
@@ -25,7 +25,7 @@ const AddPeopleModal = ({ isOpen, onClose, onAdd }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={styles.emailInput}
-          required // You can add this if you want to enforce input requirement visually
+          required 
         />
         <div className={styles.buttonContainer}>
           <button onClick={onClose} className={styles.cancelButton}>Cancel</button>
