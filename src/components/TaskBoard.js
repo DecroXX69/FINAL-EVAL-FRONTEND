@@ -32,7 +32,7 @@ const TaskBoard = ({ tasks = [], onUpdateTask }) => {
         setModalOpen(false);
     };
 
-    // New function to handle status change
+    // Function to handle status change
     const handleStatusChange = (taskId, newStatus) => {
         const updatedTask = tasks.find(task => task._id === taskId);
         if (updatedTask) {
@@ -94,9 +94,35 @@ const TaskBoard = ({ tasks = [], onUpdateTask }) => {
                             {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : ''}
                         </span>
                         <div className={styles.statusButtons}>
-                            <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
-                            <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
-                            <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
+                            {/* Conditionally render buttons based on task status */}
+                            {task.status === 'Backlog' && (
+                                <>
+                                    <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
+                                    <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
+                                    <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
+                                </>
+                            )}
+                            {task.status === 'In Progress' && (
+                                <>
+                                    <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
+                                    <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
+                                    <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
+                                </>
+                            )}
+                            {task.status === 'To Do' && (
+                                <>
+                                    <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
+                                    <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
+                                    <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
+                                </>
+                            )}
+                            {task.status === 'Done' && (
+                                <>
+                                    <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
+                                    <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
+                                    <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

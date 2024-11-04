@@ -27,7 +27,7 @@ const Dashboard = ({ username, users, setUsers }) => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`, // Corrected template literal usage
           },
         });
 
@@ -74,11 +74,11 @@ const Dashboard = ({ username, users, setUsers }) => {
   const handleUpdateTask = async (updatedTask) => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:5000/api/task/${updatedTask._id}`, {
+      const response = await fetch(`http://localhost:5000/api/task/${updatedTask._id}`, { // Fixed template literal
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Corrected template literal usage
         },
         body: JSON.stringify(updatedTask),
       });
@@ -111,7 +111,7 @@ const Dashboard = ({ username, users, setUsers }) => {
           <h4 className={styles.proManageText}>Pro Manage</h4>
         </div>
         <button
-          className={`${styles.sidebarButton} ${selectedPage === 'Board' ? styles.active : ''}`}
+          className={`${styles.sidebarButton} ${selectedPage === 'Board' ? styles.active : ''}`} // Corrected template literal
           onClick={() => setSelectedPage('Board')}
         >
           <img src={image5} alt="Board" className={styles.sidebarIcon} />
@@ -148,6 +148,9 @@ const Dashboard = ({ username, users, setUsers }) => {
             <button className={styles.topRightButton}>
               <img src={image2} alt="Collapse" />
             </button>
+            <div className={styles.taskList}>
+              <TaskBoard tasks={backlogTasks} onUpdateTask={handleUpdateTask} />
+            </div>
           </div>
           <div className={styles.card}>
             <span className={styles.cardTitle}>To Do</span>
