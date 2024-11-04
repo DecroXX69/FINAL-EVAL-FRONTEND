@@ -21,83 +21,83 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
                 setSelectedDate(task.dueDate ? new Date(task.dueDate) : null);
                 setPriority(task.priority || null);
             } else {
-                
-                setChecklists([]);
-                setCompletedChecklists([]);
-                setSelectedDate(null);
-                setPriority(null);
+                resetModal();
             }
         }
     }, [isOpen, task]); 
 
+    const resetModal = () => {
+        setChecklists([]);
+        setCompletedChecklists([]);
+        setSelectedDate(null);
+        setPriority(null);
+    };
+
     if (!isOpen) return null;
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-      
+        
         const formData = new FormData(e.target);
         const title = formData.get('title');
         const assignedTo = formData.get('assignedTo');
-      
-        if (!title || !priority || checklists.length === 0 || !checklists.some(item => item)) {
-          alert('Please fill in the Title, select a Priority, and add at least one Checklist item.');
-          return;
+
+        // Validation checks
+        if (!title || !priority || checklists.length === 0 || checklists.every(item => item.item.trim() === '')) {
+            alert('Please fill in the Title, select a Priority, and add at least one valid Checklist item.');
+            return;
         }
-      
-        
-        const formattedChecklist = checklists.map(item => ({
-          item,
-          completed: completedChecklists.includes(item)
+
+        const formattedChecklist = checklists.map((checklist, index) => ({
+            item: checklist.item, 
+            completed: completedChecklists[index]
         }));
-      
+        
         const taskData = {
-          title,
-          priority,
-          assignedTo,
-          checklist: formattedChecklist,
-          
-          dueDate: selectedDate ? selectedDate.toISOString() : null,
-          status: task ? task.status : 'To Do', 
+            title,
+            priority: priority.text,
+            assignedTo,
+            checklist: formattedChecklist,
+            dueDate: selectedDate ? selectedDate.toISOString() : null,
+            status: task ? task.status : 'To Do',
         };
-      
+
         try {
-          const response = await fetch(
-            task ? `http://localhost:5000/api/task/${task._id}` : 'http://localhost:5000/api/task',
-            {
-              method: task ? 'PUT' : 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-              },
-              body: JSON.stringify(taskData),
-            }
-          );
-      
-          if (!response.ok) throw new Error('Failed to save task');
-          const savedTask = await response.json();
-      
-          onSubmit(savedTask); // Refresh task list after saving
-          onClose();
+            const response = await fetch(
+                task ? `http://localhost:5000/api/task/${task._id}` : 'http://localhost:5000/api/task',
+                {
+                    method: task ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                    },
+                    body: JSON.stringify(taskData),
+                }
+            );
+
+            if (!response.ok) throw new Error('Failed to save task');
+
+            const savedTask = await response.json();
+            onSubmit(savedTask); 
+            onClose();
         } catch (error) {
-          console.error('Error saving task:', error.message);
+            console.error('Error saving task:', error);
+            alert('An error occurred while saving the task. Please try again.');
         }
-      };
-      
-    
-    
-    
+    };
 
     const selectPriority = (level) => {
         setPriority(level);
     };
 
     const addChecklist = () => {
-        setChecklists([...checklists, '']);
-        setCompletedChecklists([...completedChecklists, false]);
+        setChecklists([...checklists, { item: '', completed: false }]); 
+        setCompletedChecklists([...completedChecklists, false]); 
     };
 
     const handleChecklistChange = (index, value) => {
         const newChecklists = [...checklists];
-        newChecklists[index] = value;
+        newChecklists[index].item = value; // Update item property
         setChecklists(newChecklists);
     };
 
@@ -123,7 +123,6 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
     const handleDateSelect = (date) => {
         if (date instanceof Date && !isNaN(date)) {
             setSelectedDate(date);
-            
             setIsCalendarOpen(false);
         } else {
             console.error('Invalid date selected:', date);
@@ -179,9 +178,10 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
                                     />
                                     <input
                                         type="text"
-                                        value={checklist}
+                                        value={checklist.item}
                                         onChange={(e) => handleChecklistChange(index, e.target.value)}
                                         className={styles.checklistInput}
+                                        placeholder="Checklist Item"
                                     />
                                 </label>
                                 <button

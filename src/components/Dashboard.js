@@ -20,18 +20,21 @@ const Dashboard = ({ username, users, setUsers }) => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
+        const token = localStorage.getItem('authToken'); // Retrieve the token
+        console.log('Retrieved token:', token);
         const response = await fetch('http://localhost:5000/api/task', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`, 
+            Authorization: `Bearer ${token}`, 
           },
         });
         
         if (!response.ok) throw new Error('Failed to fetch tasks');
         
         const data = await response.json();
-        setTasks(data.tasks); // assume the API returns { tasks: [...] }
+        console.log('Fetched tasks:', data);
+        setTasks(data); // assume the API returns { tasks: [...] }
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -42,7 +45,7 @@ const Dashboard = ({ username, users, setUsers }) => {
 
   const handleModalSubmit = (taskData) => {
     
-    setTasks((prevTasks) => [...prevTasks, taskData]);
+    setTasks((prevTasks) => (Array.isArray(prevTasks) ? [...prevTasks, taskData] : [taskData]));
     setModalOpen(false);
   };
 
@@ -67,6 +70,33 @@ const Dashboard = ({ username, users, setUsers }) => {
       console.log('Error adding user:', error);
     }
   };
+
+  const handleUpdateTask = async (updatedTask) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:5000/api/task/${updatedTask._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedTask),
+      });
+  
+      if (!response.ok) throw new Error('Failed to update task');
+  
+      const data = await response.json();
+  
+      // Update local state
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task._id === data._id ? data : task))
+      );
+    } catch (error) {
+      console.error('Error updating task:', error);
+      alert('Failed to update task');
+    }
+  };
+  
 
   return (
     <div className={styles.dashboardContainer}>
@@ -125,7 +155,7 @@ const Dashboard = ({ username, users, setUsers }) => {
               </button>
             </div>
             <div className={styles.taskList}>
-              <TaskBoard tasks={tasks} />
+              <TaskBoard tasks={tasks} onUpdateTask={handleUpdateTask} />
             </div>
           </div>
           <div className={styles.card}>

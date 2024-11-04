@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -37,7 +38,6 @@ const AuthPage = ({ setUserName }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const apiUrl = 'http://localhost:5000/api/auth';
 
     if (isLogin) {
@@ -48,10 +48,11 @@ const AuthPage = ({ setUserName }) => {
         });
 
         const { token, name } = response.data;
-        localStorage.setItem('authToken', token);
-        setUserName(name);
+        localStorage.setItem('authToken', token); // Save token as 'authToken'
+        console.log('Token saved:', token);
+        setUserName(name); // Set the username in App's state
 
-        navigate('/dashboard');
+        navigate('/dashboard'); // Navigate to dashboard after successful login
       } catch (error) {
         setErrorMessage(error.response ? error.response.data.message : error.message);
       }
@@ -68,7 +69,7 @@ const AuthPage = ({ setUserName }) => {
           password: formData.password,
         });
 
-        setIsLogin(true);
+        setIsLogin(true); // Switch to login form after successful registration
       } catch (error) {
         setErrorMessage(error.response ? error.response.data.message : error.message);
       }

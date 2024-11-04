@@ -3,7 +3,7 @@ import styles from './Task.module.css';
 import dotimg from '../images/dots.png';
 import Modal from './Modal'; 
 
-const TaskBoard = ({ tasks, onUpdateTask }) => {
+const TaskBoard = ({ tasks = [], onUpdateTask }) => {
     const [activePopupIndex, setActivePopupIndex] = useState(null);
     const [expandedChecklistIndex, setExpandedChecklistIndex] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -18,8 +18,9 @@ const TaskBoard = ({ tasks, onUpdateTask }) => {
     };
 
     const handleEditClick = (task) => {
-        setCurrentTask(task); 
-        setModalOpen(true); 
+        console.log('Task to edit:', task);
+        setCurrentTask(task);
+        setModalOpen(true);
     };
 
     const handleModalClose = () => {
@@ -29,13 +30,14 @@ const TaskBoard = ({ tasks, onUpdateTask }) => {
 
     const handleTaskUpdate = (updatedTask) => {
         onUpdateTask(updatedTask);
-        handleModalClose(); 
+        setModalOpen(false); // Close modal after update
+        console.log('Task updated, modal should close');
     };
 
     return (
         <div className={styles.taskBoard}>
             {tasks.map((task, index) => (
-                <div key={task.id || index} className={styles.taskCard}>
+                <div key={task._id || index} className={styles.taskCard}>
                     <div className={styles.taskHeader}>
                         {task.priority && (
                             <div className={styles.taskPriority}>
@@ -58,10 +60,7 @@ const TaskBoard = ({ tasks, onUpdateTask }) => {
                         </div>
                     </div>
                     <div className={styles.taskBody}>
-                        <h4 
-                            className={styles.taskTitle} 
-                            title={task.title} 
-                        >
+                        <h4 className={styles.taskTitle} title={task.title}>
                             {task.title.length > 25 ? `${task.title.slice(0, 25)}...` : task.title}
                         </h4>
                         <div className={styles.checklistProgress}>
@@ -77,7 +76,7 @@ const TaskBoard = ({ tasks, onUpdateTask }) => {
                             <div className={styles.checklistItems}>
                                 {task.checklist.map((item, idx) => (
                                     <div key={idx} className={styles.checklistItem}>
-                                        <input type="checkbox" /> {item}
+                                        <input type="checkbox" /> {item.item}
                                     </div>
                                 ))}
                             </div>
@@ -85,9 +84,7 @@ const TaskBoard = ({ tasks, onUpdateTask }) => {
                     </div>
                     <div className={styles.taskFooter}>
                         <span className={styles.dueDate}>
-                            {task.dueDate 
-                                ? new Date(task.dueDate).toLocaleDateString()
-                                : ''}
+                            {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : ''}
                         </span>
                         <div className={styles.statusButtons}>
                             <button>Backlog</button>
@@ -99,9 +96,10 @@ const TaskBoard = ({ tasks, onUpdateTask }) => {
             ))}
             {modalOpen && (
                 <Modal 
+                    isOpen={modalOpen}
                     task={currentTask} 
                     onClose={handleModalClose} 
-                    onUpdate={handleTaskUpdate} 
+                    onSubmit={handleTaskUpdate}  
                 />
             )}
         </div>
