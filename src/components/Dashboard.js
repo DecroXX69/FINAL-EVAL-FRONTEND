@@ -10,10 +10,11 @@ import Modal from './Modal';
 import TaskBoard from './TaskBoard';
 import AddPeopleModal from './AddPeopleModal';
 import pplimg from '../images/ppl.png';
+import Analytics from './Analytics';
 
 const Dashboard = ({ username, users, setUsers }) => {
   const currentDate = new Date().toLocaleDateString('en-GB');
-  const [selectedPage, setSelectedPage] = useState('Board');
+  const [selectedPage, setSelectedPage] = useState(localStorage.getItem('selectedPage') || 'Board');
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAddPeopleModalOpen, setAddPeopleModalOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
@@ -21,21 +22,19 @@ const Dashboard = ({ username, users, setUsers }) => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const token = localStorage.getItem('authToken'); // Retrieve the token
-        console.log('Retrieved token:', token);
+        const token = localStorage.getItem('authToken');
         const response = await fetch('http://localhost:5000/api/task', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Corrected template literal usage
+            Authorization: `Bearer ${token}`,
           },
         });
 
         if (!response.ok) throw new Error('Failed to fetch tasks');
 
         const data = await response.json();
-        console.log('Fetched tasks:', data);
-        setTasks(data); // assume the API returns { tasks: [...] }
+        setTasks(data);
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -43,6 +42,10 @@ const Dashboard = ({ username, users, setUsers }) => {
 
     fetchTasks();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('selectedPage', selectedPage);
+  }, [selectedPage]);
 
   const handleModalSubmit = (taskData) => {
     setTasks((prevTasks) => (Array.isArray(prevTasks) ? [...prevTasks, taskData] : [taskData]));
@@ -59,12 +62,9 @@ const Dashboard = ({ username, users, setUsers }) => {
         body: JSON.stringify({ email }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add user');
-      }
+      if (!response.ok) throw new Error('Failed to add user');
 
       const data = await response.json();
-      console.log('User added:', data);
       setUsers((prevUsers) => [...prevUsers, data.user.email]);
     } catch (error) {
       console.log('Error adding user:', error);
@@ -74,11 +74,11 @@ const Dashboard = ({ username, users, setUsers }) => {
   const handleUpdateTask = async (updatedTask) => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:5000/api/task/${updatedTask._id}`, { // Fixed template literal
+      const response = await fetch(`http://localhost:5000/api/task/${updatedTask._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Corrected template literal usage
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedTask),
       });
@@ -86,8 +86,6 @@ const Dashboard = ({ username, users, setUsers }) => {
       if (!response.ok) throw new Error('Failed to update task');
 
       const data = await response.json();
-
-      // Update local state
       setTasks((prevTasks) =>
         prevTasks.map((task) => (task._id === data._id ? data : task))
       );
@@ -97,7 +95,6 @@ const Dashboard = ({ username, users, setUsers }) => {
     }
   };
 
-  // Filter tasks based on their statuses
   const backlogTasks = tasks.filter(task => task.status === 'Backlog');
   const toDoTasks = tasks.filter(task => task.status === 'To Do');
   const inProgressTasks = tasks.filter(task => task.status === 'In Progress');
@@ -111,80 +108,94 @@ const Dashboard = ({ username, users, setUsers }) => {
           <h4 className={styles.proManageText}>Pro Manage</h4>
         </div>
         <button
-          className={`${styles.sidebarButton} ${selectedPage === 'Board' ? styles.active : ''}`} // Corrected template literal
+          className={`${styles.sidebarButton} ${selectedPage === 'Board' ? styles.active : ''}`}
           onClick={() => setSelectedPage('Board')}
         >
           <img src={image5} alt="Board" className={styles.sidebarIcon} />
           Board
         </button>
-        <button className={styles.sidebarButton} onClick={() => setSelectedPage('Analytics')}>
+        <button
+          className={`${styles.sidebarButton} ${selectedPage === 'Analytics' ? styles.active : ''}`}
+          onClick={() => setSelectedPage('Analytics')}
+        >
           <img src={image3} alt="Analytics" className={styles.sidebarIcon} />
           Analytics
         </button>
-        <button className={styles.sidebarButton} onClick={() => setSelectedPage('Settings')}>
+        <button
+          className={`${styles.sidebarButton} ${selectedPage === 'Settings' ? styles.active : ''}`}
+          onClick={() => setSelectedPage('Settings')}
+        >
           <img src={image4} alt="Settings" className={styles.sidebarIcon} />
           Settings
         </button>
         <button className={styles.logoutButton}>Log Out</button>
       </div>
+
       <div className={styles.content}>
         <div className={styles.header}>
           <h3 className={styles.helloUser}>Hello, {username}</h3>
           <span className={styles.date}>{currentDate}</span>
         </div>
-        <div className={styles.boardHeader}>
-          <h3 className={styles.boardTitle}>Board</h3>
-          <img src={pplimg} alt="group" className={styles.pplIcon} />
-          <button
-            className={styles.addPeopleButton}
-            onClick={() => setAddPeopleModalOpen(true)}
-          >
-            Add People
-          </button>
-        </div>
-        <div className={styles.cardContainer}>
-          <div className={styles.card}>
-            <span className={styles.cardTitle}>Backlog</span>
-            <button className={styles.topRightButton}>
-              <img src={image2} alt="Collapse" />
-            </button>
-            <div className={styles.taskList}>
-              <TaskBoard tasks={backlogTasks} onUpdateTask={handleUpdateTask} />
-            </div>
-          </div>
-          <div className={styles.card}>
-            <span className={styles.cardTitle}>To Do</span>
-            <div className={styles.toDoButtonsContainer}>
-              <button className={styles.addTaskButton} onClick={() => setModalOpen(true)}>
-                <img src={image1} alt="Add Task" />
-              </button>
-              <button className={styles.collapseButton}>
-                <img src={image2} alt="Collapse" />
+
+        {selectedPage === 'Board' && (
+          <>
+            <div className={styles.boardHeader}>
+              <h3 className={styles.boardTitle}>Board</h3>
+              <img src={pplimg} alt="group" className={styles.pplIcon} />
+              <button
+                className={styles.addPeopleButton}
+                onClick={() => setAddPeopleModalOpen(true)}
+              >
+                Add People
               </button>
             </div>
-            <div className={styles.taskList}>
-              <TaskBoard tasks={toDoTasks} onUpdateTask={handleUpdateTask} />
+            <div className={styles.cardContainer}>
+              <div className={styles.card}>
+                <span className={styles.cardTitle}>Backlog</span>
+                <button className={styles.topRightButton}>
+                  <img src={image2} alt="Collapse" />
+                </button>
+                <div className={styles.taskList}>
+                  <TaskBoard tasks={backlogTasks} onUpdateTask={handleUpdateTask} />
+                </div>
+              </div>
+              <div className={styles.card}>
+                <span className={styles.cardTitle}>To Do</span>
+                <div className={styles.toDoButtonsContainer}>
+                  <button className={styles.addTaskButton} onClick={() => setModalOpen(true)}>
+                    <img src={image1} alt="Add Task" />
+                  </button>
+                  <button className={styles.collapseButton}>
+                    <img src={image2} alt="Collapse" />
+                  </button>
+                </div>
+                <div className={styles.taskList}>
+                  <TaskBoard tasks={toDoTasks} onUpdateTask={handleUpdateTask} />
+                </div>
+              </div>
+              <div className={styles.card}>
+                <span className={styles.cardTitle}>In Progress</span>
+                <button className={styles.topRightButton}>
+                  <img src={image2} alt="Collapse" />
+                </button>
+                <div className={styles.taskList}>
+                  <TaskBoard tasks={inProgressTasks} onUpdateTask={handleUpdateTask} />
+                </div>
+              </div>
+              <div className={styles.card}>
+                <span className={styles.cardTitle}>Done</span>
+                <button className={styles.topRightButton}>
+                  <img src={image2} alt="Collapse" />
+                </button>
+                <div className={styles.taskList}>
+                  <TaskBoard tasks={doneTasks} onUpdateTask={handleUpdateTask} />
+                </div>
+              </div>
             </div>
-          </div>
-          <div className={styles.card}>
-            <span className={styles.cardTitle}>In Progress</span>
-            <button className={styles.topRightButton}>
-              <img src={image2} alt="Collapse" />
-            </button>
-            <div className={styles.taskList}>
-              <TaskBoard tasks={inProgressTasks} onUpdateTask={handleUpdateTask} />
-            </div>
-          </div>
-          <div className={styles.card}>
-            <span className={styles.cardTitle}>Done</span>
-            <button className={styles.topRightButton}>
-              <img src={image2} alt="Collapse" />
-            </button>
-            <div className={styles.taskList}>
-              <TaskBoard tasks={doneTasks} onUpdateTask={handleUpdateTask} />
-            </div>
-          </div>
-        </div>
+          </>
+        )}
+
+        {selectedPage === 'Analytics' && <Analytics />}
       </div>
 
       <Modal

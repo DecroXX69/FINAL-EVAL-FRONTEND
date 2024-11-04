@@ -1,0 +1,31 @@
+.analytics {
+    display: flex;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+.analytics-content {
+    flex: 1;
+    padding: 20px;
+}
+
+.analytics-table {
+    display: flex;
+    justify-content: space-between;
+}
+
+.table-left, .table-right {
+    width: 45%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+h2, h3 {
+    margin-bottom: 15px;
+}
