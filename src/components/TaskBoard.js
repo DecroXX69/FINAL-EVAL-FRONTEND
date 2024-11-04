@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Task.module.css';
 import dotimg from '../images/dots.png';
-import Modal from './Modal'; 
+import Modal from './Modal';
 
 const TaskBoard = ({ tasks = [], onUpdateTask }) => {
     const [activePopupIndex, setActivePopupIndex] = useState(null);
@@ -18,20 +18,27 @@ const TaskBoard = ({ tasks = [], onUpdateTask }) => {
     };
 
     const handleEditClick = (task) => {
-        console.log('Task to edit:', task);
         setCurrentTask(task);
         setModalOpen(true);
     };
 
     const handleModalClose = () => {
-        setModalOpen(false); 
-        setCurrentTask(null); 
+        setModalOpen(false);
+        setCurrentTask(null);
     };
 
     const handleTaskUpdate = (updatedTask) => {
         onUpdateTask(updatedTask);
-        setModalOpen(false); // Close modal after update
-        console.log('Task updated, modal should close');
+        setModalOpen(false);
+    };
+
+    // New function to handle status change
+    const handleStatusChange = (taskId, newStatus) => {
+        const updatedTask = tasks.find(task => task._id === taskId);
+        if (updatedTask) {
+            updatedTask.status = newStatus; // Update the status
+            onUpdateTask(updatedTask); // Trigger the update function
+        }
     };
 
     return (
@@ -87,9 +94,9 @@ const TaskBoard = ({ tasks = [], onUpdateTask }) => {
                             {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : ''}
                         </span>
                         <div className={styles.statusButtons}>
-                            <button>Backlog</button>
-                            <button>Progress</button>
-                            <button>Done</button>
+                            <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
+                            <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
+                            <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
                         </div>
                     </div>
                 </div>
@@ -106,4 +113,4 @@ const TaskBoard = ({ tasks = [], onUpdateTask }) => {
     );
 };
 
-export default TaskBoard;  
+export default TaskBoard;

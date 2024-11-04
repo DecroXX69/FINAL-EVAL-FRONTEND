@@ -17,6 +17,7 @@ const Dashboard = ({ username, users, setUsers }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAddPeopleModalOpen, setAddPeopleModalOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -29,9 +30,9 @@ const Dashboard = ({ username, users, setUsers }) => {
             Authorization: `Bearer ${token}`, 
           },
         });
-        
+
         if (!response.ok) throw new Error('Failed to fetch tasks');
-        
+
         const data = await response.json();
         console.log('Fetched tasks:', data);
         setTasks(data); // assume the API returns { tasks: [...] }
@@ -44,7 +45,6 @@ const Dashboard = ({ username, users, setUsers }) => {
   }, []);
 
   const handleModalSubmit = (taskData) => {
-    
     setTasks((prevTasks) => (Array.isArray(prevTasks) ? [...prevTasks, taskData] : [taskData]));
     setModalOpen(false);
   };
@@ -82,11 +82,11 @@ const Dashboard = ({ username, users, setUsers }) => {
         },
         body: JSON.stringify(updatedTask),
       });
-  
+
       if (!response.ok) throw new Error('Failed to update task');
-  
+
       const data = await response.json();
-  
+
       // Update local state
       setTasks((prevTasks) =>
         prevTasks.map((task) => (task._id === data._id ? data : task))
@@ -96,7 +96,12 @@ const Dashboard = ({ username, users, setUsers }) => {
       alert('Failed to update task');
     }
   };
-  
+
+  // Filter tasks based on their statuses
+  const backlogTasks = tasks.filter(task => task.status === 'Backlog');
+  const toDoTasks = tasks.filter(task => task.status === 'To Do');
+  const inProgressTasks = tasks.filter(task => task.status === 'In Progress');
+  const doneTasks = tasks.filter(task => task.status === 'Done');
 
   return (
     <div className={styles.dashboardContainer}>
@@ -155,7 +160,7 @@ const Dashboard = ({ username, users, setUsers }) => {
               </button>
             </div>
             <div className={styles.taskList}>
-              <TaskBoard tasks={tasks} onUpdateTask={handleUpdateTask} />
+              <TaskBoard tasks={toDoTasks} onUpdateTask={handleUpdateTask} />
             </div>
           </div>
           <div className={styles.card}>
@@ -163,12 +168,18 @@ const Dashboard = ({ username, users, setUsers }) => {
             <button className={styles.topRightButton}>
               <img src={image2} alt="Collapse" />
             </button>
+            <div className={styles.taskList}>
+              <TaskBoard tasks={inProgressTasks} onUpdateTask={handleUpdateTask} />
+            </div>
           </div>
           <div className={styles.card}>
             <span className={styles.cardTitle}>Done</span>
             <button className={styles.topRightButton}>
               <img src={image2} alt="Collapse" />
             </button>
+            <div className={styles.taskList}>
+              <TaskBoard tasks={doneTasks} onUpdateTask={handleUpdateTask} />
+            </div>
           </div>
         </div>
       </div>
