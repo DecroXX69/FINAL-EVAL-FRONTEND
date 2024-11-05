@@ -9,11 +9,11 @@ import image6 from '../images/codesandbox.png';
 import Modal from './Modal';
 import TaskBoard from './TaskBoard';
 import AddPeopleModal from './AddPeopleModal';
+import LogoutModal from './LogoutModal'; // Import the LogoutModal
 import pplimg from '../images/ppl.png';
 import Analytics from './Analytics';
 import { jwtDecode } from 'jwt-decode';
 import Settings from './Setting';
-import LogoutModal from './LogoutModal'; // Import the LogoutModal component
 
 const Dashboard = ({ username, users, setUsers }) => {
   const currentDate = new Date().toLocaleDateString('en-GB');
@@ -54,11 +54,6 @@ const Dashboard = ({ username, users, setUsers }) => {
   const handleModalSubmit = (taskData) => {
     setTasks((prevTasks) => (Array.isArray(prevTasks) ? [...prevTasks, taskData] : [taskData]));
     setModalOpen(false);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken'); // Clear the token
-    window.location.href = '/login'; // Redirect to the login page
   };
 
   const getUserInfoFromToken = (token) => {
@@ -131,15 +126,24 @@ const Dashboard = ({ username, users, setUsers }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (!response.ok) throw new Error('Failed to delete task');
-  
+
       // Filter out the deleted task from the tasks state
       setTasks((prevTasks) => prevTasks.filter(task => task._id !== taskId));
     } catch (error) {
       console.error('Error deleting task:', error);
       alert('Failed to delete task');
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken'); // Remove token from local storage
+    window.location.href = '/login'; // Redirect to login page
+  };
+
+  const handleOpenLogoutModal = () => {
+    setLogoutModalOpen(true); // Open the logout modal
   };
 
   const backlogTasks = tasks.filter(task => task.status === 'Backlog');
@@ -175,16 +179,14 @@ const Dashboard = ({ username, users, setUsers }) => {
           <img src={image4} alt="Settings" className={styles.sidebarIcon} />
           Settings
         </button>
-        <button className={styles.logoutButton} onClick={() => setLogoutModalOpen(true)}>Log Out</button>
+        <button className={styles.logoutButton} onClick={handleOpenLogoutModal}>Log Out</button>
       </div>
 
       <div className={styles.content}>
-        {selectedPage === 'Board' && (
-          <div className={styles.header}>
-            <h3 className={styles.helloUser}>Hello, {username}</h3>
-            <span className={styles.date}>{currentDate}</span>
-          </div>
-        )}
+        <div className={styles.header}>
+          <h3 className={styles.helloUser}>Hello, {username}</h3>
+          <span className={styles.date}>{currentDate}</span>
+        </div>
 
         {selectedPage === 'Board' && (
           <>
@@ -245,32 +247,25 @@ const Dashboard = ({ username, users, setUsers }) => {
         )}
 
         {selectedPage === 'Analytics' && <Analytics />}
-        {selectedPage === 'Settings' && <Settings />}
-      </div>
 
-      {/* Modal for adding new task */}
-      {isModalOpen && (
+        {selectedPage === 'Settings' && <Settings username={username} />}
+
         <Modal
-          onSubmit={handleModalSubmit}
-          onClose={() => setModalOpen(false)}
-        />
-      )}
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        users={users}
+        onSubmit={handleModalSubmit}
+      />
 
-      {/* Modal for adding new people */}
-      {isAddPeopleModalOpen && (
         <AddPeopleModal
-          onAddUser={handleAddUser}
-          onClose={() => setAddPeopleModalOpen(false)}
-        />
-      )}
-
-      {/* Modal for logout confirmation */}
-      {isLogoutModalOpen && (
-        <LogoutModal
-          onLogout={handleLogout}
-          onClose={() => setLogoutModalOpen(false)}
-        />
-      )}
+        isOpen={isAddPeopleModalOpen}
+        onClose={() => setAddPeopleModalOpen(false)}
+        onAdd={handleAddUser}
+      />
+        {isLogoutModalOpen && (
+          <LogoutModal onClose={() => setLogoutModalOpen(false)} onLogout={handleLogout} />
+        )}
+      </div>
     </div>
   );
 };

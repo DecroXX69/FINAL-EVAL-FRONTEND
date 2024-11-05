@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const TaskView = () => {
-    const { taskId } = useParams(); // Get taskId from the URL
+    const { taskId } = useParams(); 
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -12,7 +12,7 @@ const TaskView = () => {
                 const response = await fetch(`/api/task/view/${taskId}`);
                 if (!response.ok) throw new Error('Task not found');
                 const data = await response.json();
-                console.log('Fetched task:', data); // Log the fetched task
+                console.log('Fetched task:', data); 
                 setTask(data);
             } catch (error) {
                 console.error('Error fetching task:', error);
@@ -26,7 +26,7 @@ const TaskView = () => {
 
     if (loading) return <p>Loading...</p>;
 
-    if (!task) return <p>Task not found</p>; // Handle case when task is not found
+    if (!task) return <p>Task not found</p>; 
 
     return (
         <div>

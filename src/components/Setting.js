@@ -1,4 +1,4 @@
-// src/components/Settings.js
+
 import React, { useState } from 'react';
 import styles from './Settings.module.css';
 
