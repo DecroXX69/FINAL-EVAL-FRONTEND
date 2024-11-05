@@ -11,12 +11,16 @@ import TaskBoard from './TaskBoard';
 import AddPeopleModal from './AddPeopleModal';
 import pplimg from '../images/ppl.png';
 import Analytics from './Analytics';
+import { jwtDecode } from 'jwt-decode';
+import Settings from './Setting';
+import LogoutModal from './LogoutModal'; // Import the LogoutModal component
 
 const Dashboard = ({ username, users, setUsers }) => {
   const currentDate = new Date().toLocaleDateString('en-GB');
   const [selectedPage, setSelectedPage] = useState(localStorage.getItem('selectedPage') || 'Board');
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAddPeopleModalOpen, setAddPeopleModalOpen] = useState(false);
+  const [isLogoutModalOpen, setLogoutModalOpen] = useState(false); // State for logout modal
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
@@ -52,20 +56,42 @@ const Dashboard = ({ username, users, setUsers }) => {
     setModalOpen(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken'); // Clear the token
+    window.location.href = '/login'; // Redirect to the login page
+  };
+
+  const getUserInfoFromToken = (token) => {
+    try {
+      const decodedToken = jwtDecode(token);
+      return decodedToken; // Adjust based on the structure of your token payload
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  };
+
   const handleAddUser = async (email) => {
+    const token = localStorage.getItem('authToken');
+    const userInfo = getUserInfoFromToken(token); // Decode token to get user info
+    const addedBy = userInfo?.userId; // Ensure userId is retrieved from the decoded token
+
     try {
       const response = await fetch('http://localhost:5000/api/auth/add-people', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, addedBy }),
       });
 
-      if (!response.ok) throw new Error('Failed to add user');
+      if (!response.ok) {
+        throw new Error('Failed to add user');
+      }
 
       const data = await response.json();
-      setUsers((prevUsers) => [...prevUsers, data.user.email]);
+      console.log('User added:', data);
+      setUsers((prevUsers) => [...prevUsers, data.user.addedByEmail || data.user.email]);
     } catch (error) {
       console.log('Error adding user:', error);
     }
@@ -92,6 +118,27 @@ const Dashboard = ({ username, users, setUsers }) => {
     } catch (error) {
       console.error('Error updating task:', error);
       alert('Failed to update task');
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:5000/api/task/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) throw new Error('Failed to delete task');
+  
+      // Filter out the deleted task from the tasks state
+      setTasks((prevTasks) => prevTasks.filter(task => task._id !== taskId));
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      alert('Failed to delete task');
     }
   };
 
@@ -128,14 +175,16 @@ const Dashboard = ({ username, users, setUsers }) => {
           <img src={image4} alt="Settings" className={styles.sidebarIcon} />
           Settings
         </button>
-        <button className={styles.logoutButton}>Log Out</button>
+        <button className={styles.logoutButton} onClick={() => setLogoutModalOpen(true)}>Log Out</button>
       </div>
 
       <div className={styles.content}>
-        <div className={styles.header}>
-          <h3 className={styles.helloUser}>Hello, {username}</h3>
-          <span className={styles.date}>{currentDate}</span>
-        </div>
+        {selectedPage === 'Board' && (
+          <div className={styles.header}>
+            <h3 className={styles.helloUser}>Hello, {username}</h3>
+            <span className={styles.date}>{currentDate}</span>
+          </div>
+        )}
 
         {selectedPage === 'Board' && (
           <>
@@ -156,7 +205,7 @@ const Dashboard = ({ username, users, setUsers }) => {
                   <img src={image2} alt="Collapse" />
                 </button>
                 <div className={styles.taskList}>
-                  <TaskBoard tasks={backlogTasks} onUpdateTask={handleUpdateTask} />
+                  <TaskBoard tasks={backlogTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
                 </div>
               </div>
               <div className={styles.card}>
@@ -170,7 +219,7 @@ const Dashboard = ({ username, users, setUsers }) => {
                   </button>
                 </div>
                 <div className={styles.taskList}>
-                  <TaskBoard tasks={toDoTasks} onUpdateTask={handleUpdateTask} />
+                  <TaskBoard tasks={toDoTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
                 </div>
               </div>
               <div className={styles.card}>
@@ -179,7 +228,7 @@ const Dashboard = ({ username, users, setUsers }) => {
                   <img src={image2} alt="Collapse" />
                 </button>
                 <div className={styles.taskList}>
-                  <TaskBoard tasks={inProgressTasks} onUpdateTask={handleUpdateTask} />
+                  <TaskBoard tasks={inProgressTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
                 </div>
               </div>
               <div className={styles.card}>
@@ -188,7 +237,7 @@ const Dashboard = ({ username, users, setUsers }) => {
                   <img src={image2} alt="Collapse" />
                 </button>
                 <div className={styles.taskList}>
-                  <TaskBoard tasks={doneTasks} onUpdateTask={handleUpdateTask} />
+                  <TaskBoard tasks={doneTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
                 </div>
               </div>
             </div>
@@ -196,19 +245,32 @@ const Dashboard = ({ username, users, setUsers }) => {
         )}
 
         {selectedPage === 'Analytics' && <Analytics />}
+        {selectedPage === 'Settings' && <Settings />}
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        users={users}
-        onSubmit={handleModalSubmit}
-      />
-      <AddPeopleModal
-        isOpen={isAddPeopleModalOpen}
-        onClose={() => setAddPeopleModalOpen(false)}
-        onAdd={handleAddUser}
-      />
+      {/* Modal for adding new task */}
+      {isModalOpen && (
+        <Modal
+          onSubmit={handleModalSubmit}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
+
+      {/* Modal for adding new people */}
+      {isAddPeopleModalOpen && (
+        <AddPeopleModal
+          onAddUser={handleAddUser}
+          onClose={() => setAddPeopleModalOpen(false)}
+        />
+      )}
+
+      {/* Modal for logout confirmation */}
+      {isLogoutModalOpen && (
+        <LogoutModal
+          onLogout={handleLogout}
+          onClose={() => setLogoutModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

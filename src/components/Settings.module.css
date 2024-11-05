@@ -1,0 +1,31 @@
+/* src/components/Settings.module.css */
+
+.settingsContainer {
+    display: block;
+    max-width: 400px; /* Optional: sets a max width for the form */
+    /* Centers the form horizontally */
+    padding: 20px; /* Adds padding around the container */
+  }
+  
+  .settingsLabel {
+    display: block; /* Ensures labels are displayed as block elements */
+    margin-bottom: 5px; /* Space below each label */
+  }
+  
+  .settingsInput {
+    display: block; /* Ensures inputs are block elements */
+    width: 100%; /* Full width inputs */
+    margin-bottom: 15px; /* Space below each input */
+  }
+  
+  .settingsButton {
+    display: block; /* Ensures the button is a block element */
+    width: 100%; /* Full width button */
+    margin-top: 10px; /* Space above the button */
+  }
+  
+  .settingsMessage {
+    color: red; /* Red color for error messages */
+    margin-bottom: 10px; /* Space below message */
+  }
+  

@@ -3,7 +3,7 @@ import styles from './Task.module.css';
 import dotimg from '../images/dots.png';
 import Modal from './Modal';
 
-const TaskBoard = ({ tasks = [], onUpdateTask }) => {
+const TaskBoard = ({ tasks = [], onUpdateTask, onDeleteTask }) => { // Accept onDeleteTask prop
     const [activePopupIndex, setActivePopupIndex] = useState(null);
     const [expandedChecklistIndex, setExpandedChecklistIndex] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -41,6 +41,22 @@ const TaskBoard = ({ tasks = [], onUpdateTask }) => {
         }
     };
 
+    // Function to handle task deletion
+    const handleDeleteTask = (taskId) => {
+        if (window.confirm('Are you sure you want to delete this task?')) {
+            onDeleteTask(taskId); // Call the prop function to delete the task
+        }
+    };
+    
+    const handleShareClick = (taskId) => {
+        const shareableLink = `${window.location.origin}api/task/view/${taskId}`;
+        navigator.clipboard.writeText(shareableLink).then(() => {
+            alert('Shareable link copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy link: ', err);
+        });
+    };
+    
     return (
         <div className={styles.taskBoard}>
             {tasks.map((task, index) => (
@@ -52,7 +68,9 @@ const TaskBoard = ({ tasks = [], onUpdateTask }) => {
                                 <span className={styles.priorityText}>{task.priority.text}</span>
                             </div>
                         )}
-                        <span className={styles.taskAssignee}>{task.assignedTo}</span>
+                        <span className={styles.taskAssignee}>
+                            {task.assignedTo ? task.assignedTo.email || task.assignedTo.name : 'Unassigned'}
+                        </span>
                         <div className={styles.taskOptions}>
                             <button className={styles.dotButton} onClick={() => handlePopupToggle(index)}>
                                 <img src={dotimg} alt="Options" />
@@ -60,8 +78,9 @@ const TaskBoard = ({ tasks = [], onUpdateTask }) => {
                             {activePopupIndex === index && (
                                 <div className={styles.popupMenu}>
                                     <button onClick={() => handleEditClick(task)}>Edit</button>
-                                    <button>Share</button>
-                                    <button>Delete</button>
+                                    
+                                    <button onClick={() => handleShareClick(task._id)}>Share</button>
+                                    <button onClick={() => handleDeleteTask(task._id)}>Delete</button> {/* Call delete function */}
                                 </div>
                             )}
                         </div>

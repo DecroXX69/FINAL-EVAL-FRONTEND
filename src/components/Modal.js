@@ -5,13 +5,16 @@ import deleteimage from '../images/Delete.png';
 import redimg from '../images/red.png';
 import blueimg from '../images/blue.png';
 import greenimg from '../images/green.png';
+import { jwtDecode } from 'jwt-decode';
 
-const Modal = ({ isOpen, onClose, task, onSubmit }) => { 
+const Modal = ({ isOpen, onClose, task, onSubmit ,tasks,onUpdateTask}) => { 
     const [checklists, setChecklists] = useState([]);
     const [completedChecklists, setCompletedChecklists] = useState([]);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [priority, setPriority] = useState(null); 
+    const [users, setUsers] = useState([]);
+    const [assignedTo, setAssignedTo] = useState(task?.assignedTo || '');
 
     useEffect(() => {
         if (isOpen) {
@@ -20,17 +23,72 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
                 setCompletedChecklists(new Array(task.checklist.length).fill(false)); 
                 setSelectedDate(task.dueDate ? new Date(task.dueDate) : null);
                 setPriority(task.priority || null);
+                setAssignedTo(task.assignedTo || '');
             } else {
                 resetModal();
             }
         }
     }, [isOpen, task]); 
+     
+    const getUserInfoFromToken = (token) => {
+
+        try {
+
+            const decodedToken = jwtDecode(token);
+
+            return decodedToken; // Adjust based on the structure of your token payload
+
+        } catch (error) {
+
+            console.error('Error decoding token:', error);
+
+            return null;
+
+        }
+
+    };
+
+
+    // Function to fetch users
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const token = localStorage.getItem('authToken');
+
+            const userInfo = getUserInfoFromToken(token); // Decode token to get user info
+
+            const addedBy = userInfo?.userId; // Ensure userId is retrieved from the decoded token
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/users', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                    },
+                });
+                if (!response.ok) throw new Error('Failed to fetch users');
+                const data = await response.json();
+                
+                console.log('Fetched users from add-people:', data); 
+
+                const relevantUsers = data.filter(user => user.addedBy === addedBy);
+
+                const addedUsers = relevantUsers.filter(user => user.userType === 'added'); // Filter by userType
+
+                console.log('Fetched users from add-people:', addedUsers); 
+
+                setUsers(addedUsers);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        if (isOpen) fetchUsers(); // Fetch users only when the modal is open
+    }, [isOpen]);
 
     const resetModal = () => {
         setChecklists([]);
         setCompletedChecklists([]);
         setSelectedDate(null);
         setPriority(null);
+        setAssignedTo('');
     };
 
     if (!isOpen) return null;
@@ -40,9 +98,7 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
         
         const formData = new FormData(e.target);
         const title = formData.get('title');
-        const assignedTo = formData.get('assignedTo');
 
-        // Validation checks
         if (!title || !priority || checklists.length === 0 || checklists.every(item => item.item.trim() === '')) {
             alert('Please fill in the Title, select a Priority, and add at least one valid Checklist item.');
             return;
@@ -97,7 +153,7 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
 
     const handleChecklistChange = (index, value) => {
         const newChecklists = [...checklists];
-        newChecklists[index].item = value; // Update item property
+        newChecklists[index].item = value; 
         setChecklists(newChecklists);
     };
 
@@ -160,7 +216,18 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
 
                     <label className={styles.formLabelInline}>
                         Assign to
-                        <input type="text" name="assignedTo" defaultValue={task?.assignedTo} placeholder="Add an assignee" className={styles.assignToInput} />
+                        <select
+                            id={`assign-user-${task?._id}`}
+                            onChange={(e) => setAssignedTo(e.target.value)}
+                            value={assignedTo || ''}
+                        >
+                            <option value="" disabled>Select user</option>
+                            {users.map((user) => (
+                                <option key={user._id} value={user._id}>
+                                    {user.email}
+                                </option>
+                            ))}
+                        </select>
                     </label>
 
                     <label className={styles.formLabel}>
@@ -199,24 +266,46 @@ const Modal = ({ isOpen, onClose, task, onSubmit }) => {
 
                     <div style={{ marginBottom: '20px' }}></div>
 
-                    <button type="button" onClick={toggleCalendar} className={styles.dueDateButton}>
-                        {selectedDate ? selectedDate.toLocaleDateString() : 'Select Due Date'}
-                    </button>
 
-                    {isCalendarOpen && (
-                        <div className={styles.calendarContainer}>
-                            <DatePicker selectedDate={selectedDate} onSelect={handleDateSelect} clearDate={clearDate} />
-                        </div>
-                    )}
 
-                    <div className={styles.bottomButtons}>
-                        <button type="button" onClick={onClose} className={styles.cancelButton}>Cancel</button>
-                        <button type="submit" className={styles.saveButton}>Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+<button type="button" onClick={toggleCalendar} className={styles.dueDateButton}>
+
+    {selectedDate ? selectedDate.toLocaleDateString() : 'Select Due Date'}
+
+</button>
+
+
+
+{isCalendarOpen && (
+
+    <div className={styles.calendarContainer}>
+
+        <DatePicker selectedDate={selectedDate} onSelect={handleDateSelect} clearDate={clearDate} />
+
+    </div>
+
+)}
+
+
+
+<div className={styles.bottomButtons}>
+
+    <button type="button" onClick={onClose} className={styles.cancelButton}>Cancel</button>
+
+    <button type="submit" className={styles.saveButton}>Save</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+);
+
 };
+
+
 
 export default Modal;
