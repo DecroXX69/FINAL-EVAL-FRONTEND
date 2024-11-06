@@ -1,31 +1,51 @@
-.analytics {
-    display: flex;
-}
-
-.sidebar {
-    width: 200px;
-    background-color: #f4f4f4;
+.analyticsContainer {
     padding: 20px;
+    padding-top: 10px; /* Bring the content higher */
 }
 
-.analytics-content {
+.analyticsHeading {
+    font-size: 1.5em;
+    margin-bottom: 5px; /* Reduced margin for closer spacing */
+}
+
+.analyticsTables {
+    display: flex;
+    gap: 10px; /* Reduced gap between the tables */
+}
+
+.tableContainer {
     flex: 1;
-    padding: 20px;
-}
-
-.analytics-table {
-    display: flex;
-    justify-content: space-between;
-}
-
-.table-left, .table-right {
-    width: 45%;
-    padding: 10px;
-    border: 1px solid #ddd;
+    padding: 15px;
     border-radius: 5px;
-    background-color: #fff;
+    background-color: #f9fcff;
 }
 
-h2, h3 {
-    margin-bottom: 15px;
+.taskList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.taskList li {
+    display: flex;
+    /* justify-content: space-between; */
+    gap: 40px; /* Reduced gap between task and number */
+    padding: 8px 0;
+    position: relative;
+}
+
+.taskList li::before {
+    content: "•"; /* Bullet point */
+    color: #90c4cc; /* Cyan color for bullet */
+    font-size: 1.2em;
+    position: absolute;
+    left: -20px; /* Move the bullet more to the left */
+}
+
+.taskList span {
+    color: #333;
+}
+
+.taskList li span:last-child {
+    margin-left: 5px; /* Reduced the space between task and number */
 }

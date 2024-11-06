@@ -1,6 +1,9 @@
-
 import React, { useState } from 'react';
 import styles from './Settings.module.css';
+import baba from '../images/baba.png';
+import lock from '../images/lock.png';
+import eye from '../images/eye.png';
+import mail from '../images/mail.png';
 
 const Settings = () => {
   const [formData, setFormData] = useState({
@@ -46,22 +49,52 @@ const Settings = () => {
       <h4>Settings</h4>
       {message && <p className={styles.settingsMessage}>{message}</p>}
       <form onSubmit={handleSubmit}>
-        <label className={styles.settingsLabel}>
-          Name:
-          <input className={styles.settingsInput} type="text" name="name" value={formData.name} onChange={handleChange} />
-        </label>
-        <label className={styles.settingsLabel}>
-          Email:
-          <input className={styles.settingsInput} type="email" name="email" value={formData.email} onChange={handleChange} />
-        </label>
-        <label className={styles.settingsLabel}>
-          Old Password:
-          <input className={styles.settingsInput} type="password" name="oldPassword" value={formData.oldPassword} onChange={handleChange} />
-        </label>
-        <label className={styles.settingsLabel}>
-          New Password:
-          <input className={styles.settingsInput} type="password" name="newPassword" value={formData.newPassword} onChange={handleChange} />
-        </label>
+        <div className={styles.settingsForm}>
+          <img src={baba} alt="Pro Manage" className={styles.icon} />
+          <input
+            className={styles.settingsInput}
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+        </div>
+        <div className={styles.settingsForm}>
+          <img src={mail} alt="Pro Manage" className={styles.icon} />
+          <input
+            className={styles.settingsInput}
+            type="email"
+            name="email"
+            placeholder="Update Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+        </div>
+        <div className={styles.settingsForm}>
+          <img src={lock} alt="Pro Manage" className={styles.icon} />
+          <input
+            className={styles.settingsInput}
+            type="password"
+            name="oldPassword"
+            placeholder="Old Password"
+            value={formData.oldPassword}
+            onChange={handleChange}
+          />
+          <img src={eye} alt="Show Password" className={styles.eyeIcon} />
+        </div>
+        <div className={styles.settingsForm}>
+          <img src={lock} alt="Pro Manage" className={styles.icon} />
+          <input
+            className={styles.settingsInput}
+            type="password"
+            name="newPassword"
+            placeholder="New Password"
+            value={formData.newPassword}
+            onChange={handleChange}
+          />
+          <img src={eye} alt="Show Password" className={styles.eyeIcon} />
+        </div>
         <button className={styles.settingsButton} type="submit">Update</button>
       </form>
     </div>

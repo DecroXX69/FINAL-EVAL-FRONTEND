@@ -1,29 +1,52 @@
-
 .settingsContainer {
-    display: block;
-    max-width: 400px; 
-    padding: 20px; 
-  }
-  
-  .settingsLabel {
-    display: block;
-    margin-bottom: 5px; 
-  }
-  
-  .settingsInput {
-    display: block; 
-    width: 100%; 
-    margin-bottom: 15px; 
-  }
-  
-  .settingsButton {
-    display: block; 
-    width: 100%; 
-    margin-top: 10px; 
-  }
-  
-  .settingsMessage {
-    color: red; 
-    margin-bottom: 10px; 
-  }
-  
+  display: block;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.settingsForm {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.settingsInput {
+  width: 100%;
+  padding: 10px 10px 10px 35px; /* Extra padding on the left for the icon */
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.settingsButton {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 20px;
+  border: none;
+  padding: 10px;
+  background-color: #17a2b8;
+}
+
+.settingsMessage {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}

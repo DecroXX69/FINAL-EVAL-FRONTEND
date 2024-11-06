@@ -98,12 +98,13 @@ const Modal = ({ isOpen, onClose, task, onSubmit ,tasks,onUpdateTask}) => {
         
         const formData = new FormData(e.target);
         const title = formData.get('title');
-
+    
+        // Updated validation to allow submission without assignedTo
         if (!title || !priority || checklists.length === 0 || checklists.every(item => item.item.trim() === '')) {
             alert('Please fill in the Title, select a Priority, and add at least one valid Checklist item.');
             return;
         }
-
+    
         const formattedChecklist = checklists.map((checklist, index) => ({
             item: checklist.item, 
             completed: completedChecklists[index]
@@ -112,12 +113,12 @@ const Modal = ({ isOpen, onClose, task, onSubmit ,tasks,onUpdateTask}) => {
         const taskData = {
             title,
             priority: priority.text,
-            assignedTo,
+            assignedTo: assignedTo || null, // Allow assignedTo to be null if not selected
             checklist: formattedChecklist,
             dueDate: selectedDate ? selectedDate.toISOString() : null,
             status: task ? task.status : 'To Do',
         };
-
+    
         try {
             const response = await fetch(
                 task ? `http://localhost:5000/api/task/${task._id}` : 'http://localhost:5000/api/task',
@@ -130,9 +131,9 @@ const Modal = ({ isOpen, onClose, task, onSubmit ,tasks,onUpdateTask}) => {
                     body: JSON.stringify(taskData),
                 }
             );
-
+    
             if (!response.ok) throw new Error('Failed to save task');
-
+    
             const savedTask = await response.json();
             onSubmit(savedTask); 
             onClose();
@@ -141,6 +142,7 @@ const Modal = ({ isOpen, onClose, task, onSubmit ,tasks,onUpdateTask}) => {
             alert('An error occurred while saving the task. Please try again.');
         }
     };
+    
 
     const selectPriority = (level) => {
         setPriority(level);

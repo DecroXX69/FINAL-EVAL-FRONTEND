@@ -3,7 +3,7 @@ import styles from './Task.module.css';
 import dotimg from '../images/dots.png';
 import Modal from './Modal';
 
-const TaskBoard = ({ tasks = [], onUpdateTask, onDeleteTask }) => { // Accept onDeleteTask prop
+const TaskBoard = ({ tasks = [], onUpdateTask, onDeleteTask }) => {
     const [activePopupIndex, setActivePopupIndex] = useState(null);
     const [expandedChecklistIndex, setExpandedChecklistIndex] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -47,105 +47,143 @@ const TaskBoard = ({ tasks = [], onUpdateTask, onDeleteTask }) => { // Accept on
             onDeleteTask(taskId); // Call the prop function to delete the task
         }
     };
-    
-    const handleShareClick = (taskId) => {
-        const shareableLink = `${window.location.origin}api/task/view/${taskId}`;
-        navigator.clipboard.writeText(shareableLink).then(() => {
-            alert('Shareable link copied to clipboard!');
-        }).catch(err => {
-            console.error('Failed to copy link: ', err);
-        });
+
+    const handleShareTask = (taskId) => {
+        const shareableLink = `${window.location.origin}/task/view/${taskId}`;
+        navigator.clipboard.writeText(shareableLink)
+            .then(() => alert('Link copied to clipboard!'))
+            .catch(err => console.error('Failed to copy the link: ', err));
     };
-    
+
+    const handleChecklistToggle = async (taskId, itemIndex) => {
+        const task = tasks.find(task => task._id === taskId);
+        if (task) {
+            const updatedStatus = !task.checklist[itemIndex].completed;
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`http://localhost:5000/api/task/${taskId}/checklist/${itemIndex}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ completed: updatedStatus }),
+                });
+                
+                if (!response.ok) throw new Error('Failed to update checklist');
+
+                const updatedTask = await response.json();
+                onUpdateTask(updatedTask); // Refresh task in the front end
+            } catch (error) {
+                console.error('Error updating checklist item:', error);
+            }
+        }
+    };
+
+    // Function to format the due date
+    const formatDueDate = (dueDate) => {
+        const date = new Date(dueDate);
+        const options = { month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options); // e.g., "Feb 10"
+    };
+
     return (
         <div className={styles.taskBoard}>
-            {tasks.map((task, index) => (
-                <div key={task._id || index} className={styles.taskCard}>
-                    <div className={styles.taskHeader}>
-                        {task.priority && (
-                            <div className={styles.taskPriority}>
-                                <img src={task.priority.img} alt={task.priority.text} className={styles.priorityImage} />
-                                <span className={styles.priorityText}>{task.priority.text}</span>
+            {tasks.map((task, index) => {
+                const completedCount = task.checklist.filter(item => item.completed).length; // Moved outside of JSX
+
+                return (
+                    <div key={task._id || index} className={styles.taskCard}>
+                        <div className={styles.taskHeader}>
+                            {task.priority && (
+                                <div className={styles.taskPriority}>
+                                    <span className={styles.priorityText}>{task.priority}</span>
+                                </div>
+                            )}
+                            <span className={styles.taskAssignee}>
+                                {task.assignedTo ? task.assignedTo.email || task.assignedTo.name : 'Unassigned'}
+                            </span>
+                            <div className={styles.taskOptions}>
+                                <button className={styles.dotButton} onClick={() => handlePopupToggle(index)}>
+                                    <img src={dotimg} alt="Options" />
+                                </button>
+                                {activePopupIndex === index && (
+                                    <div className={styles.popupMenu}>
+                                        <button onClick={() => handleEditClick(task)}>Edit</button>
+                                        <button onClick={() => handleShareTask(task._id)}>Share</button>
+                                        <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        <span className={styles.taskAssignee}>
-                            {task.assignedTo ? task.assignedTo.email || task.assignedTo.name : 'Unassigned'}
-                        </span>
-                        <div className={styles.taskOptions}>
-                            <button className={styles.dotButton} onClick={() => handlePopupToggle(index)}>
-                                <img src={dotimg} alt="Options" />
+                        </div>
+                        <div className={styles.taskBody}>
+                            <h4 className={styles.taskTitle} title={task.title}>
+                                {task.title.length > 25 ? `${task.title.slice(0, 25)}...` : task.title}
+                            </h4>
+                            <div className={styles.checklistProgress}>
+                                Checklist ({completedCount}/{task.checklist.length}) {/* Corrected to show completed count */}
+                            </div>
+                            <button 
+                                className={styles.expandChecklistButton} 
+                                onClick={() => handleExpandChecklist(index)}
+                            >
+                                ▼
                             </button>
-                            {activePopupIndex === index && (
-                                <div className={styles.popupMenu}>
-                                    <button onClick={() => handleEditClick(task)}>Edit</button>
-                                    
-                                    <button onClick={() => handleShareClick(task._id)}>Share</button>
-                                    <button onClick={() => handleDeleteTask(task._id)}>Delete</button> {/* Call delete function */}
+                            {expandedChecklistIndex === index && (
+                                <div className={styles.checklistItems}>
+                                    {task.checklist.map((item, idx) => (
+                                        <div key={idx} className={styles.checklistItem}>
+                                            <input
+                                                type="checkbox"
+                                                checked={item.completed}
+                                                onChange={() => handleChecklistToggle(task._id, idx)}
+                                            /> 
+                                            {item.item}
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
-                    </div>
-                    <div className={styles.taskBody}>
-                        <h4 className={styles.taskTitle} title={task.title}>
-                            {task.title.length > 25 ? `${task.title.slice(0, 25)}...` : task.title}
-                        </h4>
-                        <div className={styles.checklistProgress}>
-                            Checklist ({task.completedChecklistCount}/{task.checklist.length})
-                        </div>
-                        <button 
-                            className={styles.expandChecklistButton} 
-                            onClick={() => handleExpandChecklist(index)}
-                        >
-                            ▼
-                        </button>
-                        {expandedChecklistIndex === index && (
-                            <div className={styles.checklistItems}>
-                                {task.checklist.map((item, idx) => (
-                                    <div key={idx} className={styles.checklistItem}>
-                                        <input type="checkbox" /> {item.item}
-                                    </div>
-                                ))}
+                        <div className={styles.taskFooter}>
+                            <span className={styles.dueDate}>
+                                {task.dueDate ? formatDueDate(task.dueDate) : 'No due date'}
+                            </span>
+                            <div className={styles.statusButtons}>
+                                {/* Conditionally render buttons based on task status */}
+                                {task.status === 'Backlog' && (
+                                    <>
+                                        <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
+                                        <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
+                                        <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
+                                    </>
+                                )}
+                                {task.status === 'In Progress' && (
+                                    <>
+                                        <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
+                                        <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
+                                        <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
+                                    </>
+                                )}
+                                {task.status === 'To Do' && (
+                                    <>
+                                        <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
+                                        <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
+                                        <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
+                                    </>
+                                )}
+                                {task.status === 'Done' && (
+                                    <>
+                                        <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
+                                        <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
+                                        <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
+                                    </>
+                                )}
                             </div>
-                        )}
-                    </div>
-                    <div className={styles.taskFooter}>
-                        <span className={styles.dueDate}>
-                            {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : ''}
-                        </span>
-                        <div className={styles.statusButtons}>
-                            {/* Conditionally render buttons based on task status */}
-                            {task.status === 'Backlog' && (
-                                <>
-                                    <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
-                                    <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
-                                    <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
-                                </>
-                            )}
-                            {task.status === 'In Progress' && (
-                                <>
-                                    <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
-                                    <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
-                                    <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
-                                </>
-                            )}
-                            {task.status === 'To Do' && (
-                                <>
-                                    <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
-                                    <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
-                                    <button onClick={() => handleStatusChange(task._id, 'Done')}>Done</button>
-                                </>
-                            )}
-                            {task.status === 'Done' && (
-                                <>
-                                    <button onClick={() => handleStatusChange(task._id, 'Backlog')}>Backlog</button>
-                                    <button onClick={() => handleStatusChange(task._id, 'To Do')}>To Do</button>
-                                    <button onClick={() => handleStatusChange(task._id, 'In Progress')}>Progress</button>
-                                </>
-                            )}
                         </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
             {modalOpen && (
                 <Modal 
                     isOpen={modalOpen}

@@ -9,10 +9,19 @@ const TaskView = () => {
     useEffect(() => {
         const fetchTask = async () => {
             try {
-                const response = await fetch(`/api/task/view/${taskId}`);
-                if (!response.ok) throw new Error('Task not found');
+                const response = await fetch(`http://localhost:5000/api/task/view/${taskId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Assuming token is stored in localStorage
+                    }
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Task not found');
+                }
+                
                 const data = await response.json();
-                console.log('Fetched task:', data); 
                 setTask(data);
             } catch (error) {
                 console.error('Error fetching task:', error);

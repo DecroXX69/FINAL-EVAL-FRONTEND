@@ -32,51 +32,24 @@ const Analytics = () => {
 
   return (
     <div className={styles.analyticsContainer}>
-      <div className={styles.analyticsTable}>
-        <h3>Task Status</h3>
-        <table>
-          <tbody>
-            <tr>
-              <td>Backlog</td>
-              <td>{taskStats.backlog}</td>
-            </tr>
-            <tr>
-              <td>To Do</td>
-              <td>{taskStats.toDo}</td>
-            </tr>
-            <tr>
-              <td>In Progress</td>
-              <td>{taskStats.inProgress}</td>
-            </tr>
-            <tr>
-              <td>Completed</td>
-              <td>{taskStats.completed}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div className={styles.analyticsTable}>
-        <h3>Priority and Due Tasks</h3>
-        <table>
-          <tbody>
-            <tr>
-              <td>High Priority</td>
-              <td>{taskStats.highPriority}</td>
-            </tr>
-            <tr>
-              <td>Medium Priority</td>
-              <td>{taskStats.mediumPriority}</td>
-            </tr>
-            <tr>
-              <td>Low Priority</td>
-              <td>{taskStats.lowPriority}</td>
-            </tr>
-            <tr>
-              <td>Due Tasks</td>
-              <td>{taskStats.dueTasks}</td>
-            </tr>
-          </tbody>
-        </table>
+      <h4 className={styles.analyticsHeading}>Analytics</h4>
+      <div className={styles.analyticsTables}>
+        <div className={styles.tableContainer}>
+          <ul className={styles.taskList}>
+            <li><span>Backlog</span> <span>{taskStats.backlog}</span></li>
+            <li><span>To Do</span> <span>{taskStats.toDo}</span></li>
+            <li><span>In Progress</span> <span>{taskStats.inProgress}</span></li>
+            <li><span>Completed</span> <span>{taskStats.completed}</span></li>
+          </ul>
+        </div>
+        <div className={styles.tableContainer}>
+          <ul className={styles.taskList}>
+            <li><span>High Priority</span> <span>{taskStats.highPriority}</span></li>
+            <li><span>Medium Priority</span> <span>{taskStats.mediumPriority}</span></li>
+            <li><span>Low Priority</span> <span>{taskStats.lowPriority}</span></li>
+            <li><span>Due Tasks</span> <span>{taskStats.dueTasks}</span></li>
+          </ul>
+        </div>
       </div>
     </div>
   );

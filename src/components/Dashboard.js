@@ -12,8 +12,9 @@ import AddPeopleModal from './AddPeopleModal';
 import LogoutModal from './LogoutModal'; // Import the LogoutModal
 import pplimg from '../images/ppl.png';
 import Analytics from './Analytics';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode'; // Imported jwtDecode correctly
 import Settings from './Setting';
+import image7 from '../images/Logout.png';
 
 const Dashboard = ({ username, users, setUsers }) => {
   const currentDate = new Date().toLocaleDateString('en-GB');
@@ -22,6 +23,9 @@ const Dashboard = ({ username, users, setUsers }) => {
   const [isAddPeopleModalOpen, setAddPeopleModalOpen] = useState(false);
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false); // State for logout modal
   const [tasks, setTasks] = useState([]);
+  
+  // Retrieve username from token on initial load
+  const [displayedUsername, setDisplayedUsername] = useState(localStorage.getItem('username') || username);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -47,15 +51,13 @@ const Dashboard = ({ username, users, setUsers }) => {
     fetchTasks();
   }, []);
 
+  // Persist selectedPage and username
   useEffect(() => {
     localStorage.setItem('selectedPage', selectedPage);
-  }, [selectedPage]);
+    localStorage.setItem('username', displayedUsername);
+  }, [selectedPage, displayedUsername]);
 
-  const handleModalSubmit = (taskData) => {
-    setTasks((prevTasks) => (Array.isArray(prevTasks) ? [...prevTasks, taskData] : [taskData]));
-    setModalOpen(false);
-  };
-
+  // Decode the token to get user information
   const getUserInfoFromToken = (token) => {
     try {
       const decodedToken = jwtDecode(token);
@@ -64,6 +66,21 @@ const Dashboard = ({ username, users, setUsers }) => {
       console.error('Error decoding token:', error);
       return null;
     }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token && !displayedUsername) {
+      const userInfo = getUserInfoFromToken(token);
+      if (userInfo && userInfo.username) {
+        setDisplayedUsername(userInfo.username);
+      }
+    }
+  }, [displayedUsername]);
+
+  const handleModalSubmit = (taskData) => {
+    setTasks((prevTasks) => (Array.isArray(prevTasks) ? [...prevTasks, taskData] : [taskData]));
+    setModalOpen(false);
   };
 
   const handleAddUser = async (email) => {
@@ -179,76 +196,80 @@ const Dashboard = ({ username, users, setUsers }) => {
           <img src={image4} alt="Settings" className={styles.sidebarIcon} />
           Settings
         </button>
-        <button className={styles.logoutButton} onClick={handleOpenLogoutModal}>Log Out</button>
+        <button className={styles.logoutButton} onClick={handleOpenLogoutModal}>
+  <img src={image7} alt="Logout Icon" className={styles.logoutIcon} />
+  Log Out
+</button>
+
       </div>
-
       <div className={styles.content}>
-        <div className={styles.header}>
-          <h3 className={styles.helloUser}>Hello, {username}</h3>
-          <span className={styles.date}>{currentDate}</span>
+  {selectedPage === 'Board' && (
+    <div className={styles.header}>
+      <h3 className={styles.helloUser}>Hello, {displayedUsername}</h3>
+      <span className={styles.date}>{currentDate}</span>
+    </div>
+  )}
+
+  {selectedPage === 'Board' && (
+    <>
+      <div className={styles.boardHeader}>
+        <h3 className={styles.boardTitle}>Board</h3>
+        <img src={pplimg} alt="group" className={styles.pplIcon} />
+        <button
+          className={styles.addPeopleButton}
+          onClick={() => setAddPeopleModalOpen(true)}
+        >
+          Add People
+        </button>
+      </div>
+      <div className={styles.cardContainer}>
+        <div className={styles.card}>
+          <span className={styles.cardTitle}>Backlog</span>
+          <button className={styles.topRightButton}>
+            <img src={image2} alt="Collapse" />
+          </button>
+          <div className={styles.taskList}>
+            <TaskBoard tasks={backlogTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
+          </div>
         </div>
+        <div className={styles.card}>
+          <span className={styles.cardTitle}>To Do</span>
+          <div className={styles.toDoButtonsContainer}>
+            <button className={styles.addTaskButton} onClick={() => setModalOpen(true)}>
+              <img src={image1} alt="Add Task" />
+            </button>
+            <button className={styles.collapseButton}>
+              <img src={image2} alt="Collapse" />
+            </button>
+          </div>
+          <div className={styles.taskList}>
+            <TaskBoard tasks={toDoTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
+          </div>
+        </div>
+        <div className={styles.card}>
+          <span className={styles.cardTitle}>In Progress</span>
+          <button className={styles.topRightButton}>
+            <img src={image2} alt="Collapse" />
+          </button>
+          <div className={styles.taskList}>
+            <TaskBoard tasks={inProgressTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
+          </div>
+        </div>
+        <div className={styles.card}>
+          <span className={styles.cardTitle}>Done</span>
+          <button className={styles.topRightButton}>
+            <img src={image2} alt="Collapse" />
+          </button>
+          <div className={styles.taskList}>
+            <TaskBoard tasks={doneTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
+          </div>
+        </div>
+      </div>
+    </>
+  )}
 
-        {selectedPage === 'Board' && (
-          <>
-            <div className={styles.boardHeader}>
-              <h3 className={styles.boardTitle}>Board</h3>
-              <img src={pplimg} alt="group" className={styles.pplIcon} />
-              <button
-                className={styles.addPeopleButton}
-                onClick={() => setAddPeopleModalOpen(true)}
-              >
-                Add People
-              </button>
-            </div>
-            <div className={styles.cardContainer}>
-              <div className={styles.card}>
-                <span className={styles.cardTitle}>Backlog</span>
-                <button className={styles.topRightButton}>
-                  <img src={image2} alt="Collapse" />
-                </button>
-                <div className={styles.taskList}>
-                  <TaskBoard tasks={backlogTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
-                </div>
-              </div>
-              <div className={styles.card}>
-                <span className={styles.cardTitle}>To Do</span>
-                <div className={styles.toDoButtonsContainer}>
-                  <button className={styles.addTaskButton} onClick={() => setModalOpen(true)}>
-                    <img src={image1} alt="Add Task" />
-                  </button>
-                  <button className={styles.collapseButton}>
-                    <img src={image2} alt="Collapse" />
-                  </button>
-                </div>
-                <div className={styles.taskList}>
-                  <TaskBoard tasks={toDoTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
-                </div>
-              </div>
-              <div className={styles.card}>
-                <span className={styles.cardTitle}>In Progress</span>
-                <button className={styles.topRightButton}>
-                  <img src={image2} alt="Collapse" />
-                </button>
-                <div className={styles.taskList}>
-                  <TaskBoard tasks={inProgressTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
-                </div>
-              </div>
-              <div className={styles.card}>
-                <span className={styles.cardTitle}>Done</span>
-                <button className={styles.topRightButton}>
-                  <img src={image2} alt="Collapse" />
-                </button>
-                <div className={styles.taskList}>
-                  <TaskBoard tasks={doneTasks} onUpdateTask={handleUpdateTask} onDeleteTask={handleDeleteTask} />
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        {selectedPage === 'Analytics' && <Analytics />}
-
-        {selectedPage === 'Settings' && <Settings username={username} />}
+  {selectedPage === 'Analytics' && <Analytics />}
+  {selectedPage === 'Settings' && <Settings />}
 
         <Modal
         isOpen={isModalOpen}
